@@ -1,5 +1,5 @@
-# Operator Framework packaging format
-
+Operator Framework packaging format
+===================================
 This guide outlines the packaging format for Operators supported by Operator Lifecycle Manager (OLM) in {product-title}.
 
 Support for the legacy *package manifest format* for Operators is removed in {product-title} 4.8 and later. Existing Operator projects in the package manifest format can be migrated to the bundle format by using the Operator SDK `pkgman-to-bundle` command. See [Migrating package manifest projects to bundle format](../../operators/operator_sdk/osdk-pkgman-to-bundle.xml#osdk-pkgman-to-bundle) for more details.
