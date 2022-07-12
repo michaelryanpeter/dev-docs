@@ -77,7 +77,9 @@ The Operator bundle format is the default packaging method for Operator SDK and 
             [-n <namespace>] \
             <registry>/<user>/<bundle_image_name>:<tag>
 
-    -   By default, the command installs the Operator in the currently active project in your `~/.kube/config` file. You can add the `-n` flag to set a different namespace scope for the installation.
+    -   By default, the command installs the Operator in the currently active project in your `~/.kube/config` file. You can add the `-n` flag to set a different namespace scope for the installation
+    
+    - Also, by default, this command supports the adopted File-Based Catalog (FBC) format for indexes, along with contuining to support the existing SQLite based index format. If an index image is not provided by the user, this commands defaults to creating a valid File-Based Catalog (FBC) on the fly using the default index image `quay.io/operator-framework/opm:latest` and thereby installing the operator bundle on cluster. Please note that SQLite based index formats are deprecated and will be completely removed soon, so it would be ideal to migrate your workflows to using the new File-Based Catalog (FBC) format. The CLI for this command remains exactly the same i.e. no user-facing changes. 
 
     This command performs the following actions:
 
@@ -85,8 +87,13 @@ The Operator bundle format is the default packaging method for Operator SDK and 
 
     -   Create a catalog source that points to your new index image, which enables OperatorHub to discover your Operator.
 
-    -   Deploy your Operator to your cluster by creating an `OperatorGroup`, `Subscription`, `InstallPlan`, and all other required objects, including RBAC.
+    -   Deploy your Operator to your cluster by creating an `OperatorGroup`, `Subscription`, `InstallPlan`, and all other required resources, including RBAC.
 
+    - More information on FBCs and how operator bundles are created using Operator SDK can be found at the links below:
+        - https://olm.operatorframework.io/docs/reference/file-based-catalogs/
+        - https://github.com/k8s-operatorhub/community-operators/discussions/505
+        - https://github.com/operator-framework/operator-registry/blob/master/docs/design/operator-bundle.md
+        - 
 # Publishing a catalog containing a bundled Operator
 
 To install and manage Operators, Operator Lifecycle Manager (OLM) requires that Operator bundles are listed in an index image, which is referenced by a catalog on the cluster. As an Operator author, you can use the Operator SDK to create an index containing the bundle for your Operator and all of its dependencies. This is useful for testing on remote clusters and publishing to container registries.
@@ -240,15 +247,20 @@ The `run bundle-upgrade` subcommand automates triggering an installed Operator t
         $ operator-sdk run bundle <registry>/<user>/memcached-operator:v0.0.1
 
     **Example output**
-
-        INFO[0009] Successfully created registry pod: quay-io-demo-memcached-operator-v0-0-1
-        INFO[0009] Created CatalogSource: memcached-operator-catalog
-        INFO[0010] OperatorGroup "operator-sdk-og" created
-        INFO[0010] Created Subscription: memcached-operator-v0-0-1-sub
-        INFO[0013] Approved InstallPlan install-bqggr for the Subscription: memcached-operator-v0-0-1-sub
-        INFO[0013] Waiting for ClusterServiceVersion "my-project/memcached-operator.v0.0.1" to reach 'Succeeded' phase
-        INFO[0013]   Waiting for ClusterServiceVersion "my-project/memcached-operator.v0.0.1" to appear
-        INFO[0019]   Found ClusterServiceVersion "my-project/memcached-operator.v0.0.1" phase: Succeeded
+        
+        INFO[0006] Creating a File-Based Catalog of the bundle "quay.io/demo/memcached-operator:v0.0.1"
+        INFO[0008] Generated a valid File-Based Catalog
+        INFO[0012] Created registry pod: quay-io-demo-memcached-operator-v4-12
+        INFO[0012] Created CatalogSource: memcached-operator-catalog
+        INFO[0012] OperatorGroup "operator-sdk-og" created
+        INFO[0012] Created Subscription: memcached-operator-v0-0-1-sub
+        INFO[0015] Approved InstallPlan install-h9666 for the Subscription: memcached-operator-v0-0-1-sub
+        INFO[0015] Waiting for ClusterServiceVersion "my-project/memcached-operator.v0.0.1" to reach 'Succeeded' phase
+        INFO[0015]   Waiting for ClusterServiceVersion ""my-project/memcached-operator.v0.0.1" to appear
+        INFO[0026]   Found ClusterServiceVersion "my-project/memcached-operator.v0.0.1" phase: Pending
+        INFO[0028]   Found ClusterServiceVersion "my-project/memcached-operator.v0.0.1" phase: Installing
+        INFO[0059]   Found ClusterServiceVersion "my-project/memcached-operator.v0.0.1" phase: Succeeded
+        INFO[0059] OLM has successfully installed "memcached-operator.v0.0.1"
 
 2.  Upgrade the installed Operator by specifying the bundle image for the later Operator version:
 
@@ -258,11 +270,13 @@ The `run bundle-upgrade` subcommand automates triggering an installed Operator t
 
         INFO[0002] Found existing subscription with name memcached-operator-v0-0-1-sub and namespace my-project
         INFO[0002] Found existing catalog source with name memcached-operator-catalog and namespace my-project
-        INFO[0009] Successfully created registry pod: quay-io-demo-memcached-operator-v0-0-2
+        INFO[0008] Generated a valid Upgraded File-Based Catalog
+        INFO[0009] Created registry pod: quay-io-demo-memcached-operator-v0-0-2
         INFO[0009] Updated catalog source memcached-operator-catalog with address and annotations
         INFO[0010] Deleted previous registry pod with name "quay-io-demo-memcached-operator-v0-0-1"
         INFO[0041] Approved InstallPlan install-gvcjh for the Subscription: memcached-operator-v0-0-1-sub
         INFO[0042] Waiting for ClusterServiceVersion "my-project/memcached-operator.v0.0.2" to reach 'Succeeded' phase
+        INFO[0019]   Found ClusterServiceVersion "my-project/memcached-operator.v0.0.2" phase: Pending
         INFO[0042]   Found ClusterServiceVersion "my-project/memcached-operator.v0.0.2" phase: InstallReady
         INFO[0043]   Found ClusterServiceVersion "my-project/memcached-operator.v0.0.2" phase: Installing
         INFO[0044]   Found ClusterServiceVersion "my-project/memcached-operator.v0.0.2" phase: Succeeded
