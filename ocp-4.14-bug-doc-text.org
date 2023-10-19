@@ -1,0 +1,45 @@
+#+title:      OCP 4.14 Bug batching
+#+date:       [2023-10-18 Wed 15:35]
+#+filetags:   :work:
+#+identifier: 20231018T153514
+
+* Todd
+**  [[ocpbugs:13128][OCPBUGS-13128]]
+
+#+begin_src adoc
+* Before this update, Operator Lifecycle Manager (OLM) could cause failed installations due to initialization errors when the API server was busy. This update fixes the issue by adding a one minute retry interval for initialization errors.
+(link:https://issues.redhat.com/browse/OCPBUGS-13128[*OCPBUGS-13128*])
+#+end_src
+
+* [[ocpbugs:1684][OCPBUGS-1684]]
+#+begin_src
+* Before this update, `collect-profiles` pods caused regular spikes of CPU usage due to the way certificates were generated. With this update, certificates are generated daily, the loading of the certificate is optimized, and CPU usage is lower.
+(link:https://issues.redhat.com/browse/OCPBUGS-1684[*OCPBUGS-1684*])
+#+end_src
+
+* Bryce
+** [[OCPBUGS:9357][OCPBUGS-9357]]
+
+#+begin_src
+* Before this update, a race condition occurred if custom catalogs used the same names as the default Red Hat catalogs in a disconnected environment. If the default Red Hat catalogs were disabled, the catalogs were created at start up then deleted after the Operator Hub custom resource (CR) was reconciled. As a result, the custom catalogs were deleted along with the default Red Hat catalogs. With this update, the Operator Hub CR is reconciled before any catalogs are deleted, preventing the race condition.
+(link:https://issues.redhat.com/browse/OCPBUGS-9357[*OCPBUGS-9357*])
+#+end_src
+
+* Alex
+** [[ocpbugs:7910][OCPBUGS-7910]]
+
+#+begin_src
+* Before this update, the channels of some Operators were displayed on OperatorHub in a random order. With this update, Operator channels are displayed in lexicographical order.
+(link:https://issues.redhat.com/browse/OCPBUGS-7910[*OCPBUGS-7910*])
+#+end_src
+
+
+* Daniel
+** [[ocpbugs:7431][OCPBUGS-7431]]
+
+#+begin_src
+* Before this update, registry pods were not drained gracefully by the autoscaler if the controller flag was not set to true in the owner references file. With this update, the controller flag is set to true and draining nodes no longer requires a forceful shutdown.
+(link:https://issues.redhat.com/browse/OCPBUGS-7431[*OCPBUGS-7431*])
+#+end_src
+
+#  LocalWords:  ocpbugs OperatorHub autoscaler
